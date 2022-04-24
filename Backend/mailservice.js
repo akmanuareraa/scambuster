@@ -5,7 +5,7 @@ const transport=nodemailer.createTransport({
     service:'gmail',
     auth:{
         user:'graphiteworkflowbc@gmail.com',
-        pass:'GPI@123#graphite'
+        pass:''
     }
 
 })
