@@ -7,6 +7,7 @@ const sendMail = require('./mailservice')
 const nodemailer = require('nodemailer')
 const bodyParser = require('body-parser')
 const Moralis = require("moralis/node");
+const linkpreview = require('link-preview-js')
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -30,10 +31,10 @@ app.use(function (req, res, next) {
 
 const protonabi = require('./protonABI')
 const config = {
-  private: "7526f47bfe4f3316f4f7d94c1fa978b27741f8de0d1d09a39120bb2a54400e6a",
-  rpc: "https://speedy-nodes-nyc.moralis.io/5a65aeefd6cc8930e6f47455/polygon/mumbai",
-  ownerAddress: "0xcc1eB02Fa619dceb2dBd69BbAd7Dcd6C10063a37",
-  protonAddress: "0x0cabE5C46e72547585679a028D242B79C09625af"
+    private: "7526f47bfe4f3316f4f7d94c1fa978b27741f8de0d1d09a39120bb2a54400e6a",
+    rpc: "https://speedy-nodes-nyc.moralis.io/5a65aeefd6cc8930e6f47455/polygon/mumbai",
+    ownerAddress: "0xcc1eB02Fa619dceb2dBd69BbAd7Dcd6C10063a37",
+    protonAddress: "0x222A1417108fde10eD49d447E782FbD30F8ADF37"
 }
 const owner = new HDWalletProvider(config.private, config.rpc)
 const web3 = new Web3(owner)
@@ -107,10 +108,10 @@ app.post('/mint', function (req, res) {
             console.log("Error at mint charm");
         }
     })
-        .on('error', function (error) { 
+        .on('error', function (error) {
             console.log("error at mintcharm", error)
             res.status(500).json({ Status: error })
-         })
+        })
         .on('transactionHash', function (transactionHash) {
             console.log("txHash", transactionHash);
         })
@@ -118,4 +119,11 @@ app.post('/mint', function (req, res) {
             console.log("receipt", receipt);
             res.status(200).json({ Status: receipt })
         });
+})
+
+app.post('/getpreview', function (req, res) {
+    console.log("Reached here", req.body.url)
+    linkpreview.getLinkPreview(req.body.url).then((data) =>
+        res.status(200).json({ Status: data })
+    );
 })
