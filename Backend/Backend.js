@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer')
 const bodyParser = require('body-parser')
 const Moralis = require("moralis/node");
 const linkpreview = require('link-preview-js')
+const Pageres = require('pageres')
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -121,9 +122,16 @@ app.post('/mint', function (req, res) {
         });
 })
 
-app.post('/getpreview', function (req, res) {
+app.post('/getpreview', async function (req, res) {
     console.log("Reached here", req.body.url)
-    linkpreview.getLinkPreview(req.body.url).then((data) =>
-        res.status(200).json({ Status: data })
-    );
+    // linkpreview.getLinkPreview(req.body.url).then((data) =>
+    //     res.status(200).json({ Status: data })
+    // );
+    let image = await new Pageres({ delay: 2 })
+        .src(req.body.url)
+        .dest('/')
+        .run();
+
+    res.status(200).json({ Status: image})
+    console.log('Finished generating screenshots!', image);
 })
