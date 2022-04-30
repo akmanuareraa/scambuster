@@ -1,73 +1,176 @@
-import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
-import getWeb3 from "./getWeb3";
+import React, { useState, useEffect } from "react";
+import './App.css'
+import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
+//import { useMoralis } from 'react-moralis'
+import 'bulma/css/bulma.min.css';
+//import 'bulma/css/bulma.css';
+//import './css/mystyles.css';
+//import 'bulma-o-steps/bulma-steps.css';
 
-import "./App.css";
+// importing React Components
+import Web3 from 'web3'
+import Nav from './components/reactComponents/Navbar'
+// import HomepageDemo from './components/reactComponents/HomepageDemo'
+import HomeValidator from './components/reactComponents/Validator'
+import HomeProposer from './components/reactComponents/Proposer'
+import VerifyLink from './components/reactComponents/VerifyLink'
 
-class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+//Using bulma alternative here to save effort. Plasmic version CreateNftForm is also there in repo
+// import CreateNftForm  from './components/reactComponents/CreateNftbulma'
+// import Mywallet  from './components/reactComponents/wallet'
+// import MarketPlace  from './components/reactComponents/marketplace'
+// import NftPage  from './components/reactComponents/NftPage'
+// import SellNftForm from './components/reactComponents/nftsale'
+// import BuyNftForm from './components/reactComponents/nftbuy'
+import HomeScam from './components/reactComponents/HomeScam'
 
-  componentDidMount = async () => {
-    try {
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
+//import HomePage from './components/reactComponents/HomePage'
+//import EmailSignUp from "./components/reactComponents/EmailSignUp";
+//import WebThreeAuth from './components/reactComponents/WebThreeAuth'
+//import Login from './components/reactComponents/Login'
+//import EmailLogin from './components/reactComponents/EmailLogin'
 
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
 
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
-      const instance = new web3.eth.Contract(
-        SimpleStorageContract.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
+function App() {
 
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
-      console.error(error);
-    }
-  };
 
-  runExample = async () => {
-    const { accounts, contract } = this.state;
+  const params = { address: 'address' };
 
-    // Stores a given value, 5 by default.
-    await contract.methods.set(5).send({ from: accounts[0] });
+  const [appState, setAppState] = useState({
+    watchweb3: new Web3(new Web3.providers.WebsocketProvider('wss://speedy-nodes-nyc.moralis.io/833cf87df6d280847ac4787c/polygon/mumbai/ws'))
+  })
+  const [allUrlParams, setallUrlParams] = useState({ address: "" })
+  const [siteData, setsiteData] = useState({ site: [] })
 
-    // Get the value from the contract to prove it worked.
-    const response = await contract.methods.get().call();
+  const [web3, setweb3] = useState({
+    web3: "",
+    account: "",
+    isWeb3: ""
+  })
 
-    // Update state with the result.
-    this.setState({ storageValue: response });
-  };
 
-  render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
-    }
-    return (
-      <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 42</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div>
-      </div>
-    );
+
+
+  const urlParser = () => {
+
+
+    //const { address } = useParams()
+    //const queryParams = new URLSearchParams(window.location.search);
+
+    //const address = queryParams.get('address');
+
+    //console.log(address, "address");
+
+    // url parsing
+    //var params = { address:''};
+
+    let parser = document.createElement('a');
+    let href = window.location.href;
+
+    const paramsArray = href.split("/");
+
+    const address = paramsArray[paramsArray.length - 1]
+
+    //const queryParams = new URLSearchParams(window.location.search);
+    //console.log("queryParams",queryParams);
+    //const address = queryParams.get('address');
+    //let query = parser.search.substring(1);
+    //console.log("query",query,parser.href,parser);
+    //params.address = decodeURIComponent(query);
+
+
+    setallUrlParams(prevState => {
+      return {
+        ...prevState,
+        address: address
+      }
+    })
   }
+
+
+
+  const ConnectWallet = () => {
+
+    console.log('Calling ConnectWallet...')
+
+    //console.log("Reached wallet",window.ethereum)
+
+    if (window.ethereum) {
+
+      //app.state.isWeb3 = true;
+      const ethereum = window.ethereum;
+
+      let web3 = new Web3(ethereum);
+
+      //this.web3 = web3;
+
+      ethereum.enable().then((accounts) => {
+        //let account = accounts[0];
+        //web3.eth.defaultAccount = account ;
+        //console.log ( account);
+        /*
+        app.setState({
+           account : account,
+           web3 : this.web3
+         });*/
+        console.log('accounts', accounts);
+        setweb3(prevState => {
+          return {
+            ...prevState,
+            isWeb3: true,
+            account: web3.utils.toChecksumAddress(accounts[0]),
+            web3: web3
+          }
+        });
+
+
+      })
+    }
+  }
+
+
+  return (
+    <>
+      <BrowserRouter>
+        {<Nav
+          appState={appState}
+          setAppState={setAppState}
+        />}
+        <Routes>
+          <Route path="/" element={<HomeScam
+            appState={appState}
+            setAppState={setAppState}
+            siteData={siteData}
+            setsiteData={setsiteData}
+            account={web3.account}
+          />} />
+          <Route path="/validator" element={<HomeValidator
+            appState={appState}
+            setAppState={setAppState}
+            // web3={web3.web3}
+            // account={web3.account}
+            siteData={siteData}
+            setsiteData={setsiteData}
+          />} />
+          <Route path="/proposer" element={<HomeProposer
+            appState={appState}
+            setAppState={setAppState}
+          />} />
+          <Route exact path="/verifylink/:address" element={<VerifyLink
+            allUrlParams={allUrlParams}
+            urlParser={urlParser}
+            isWeb3={web3.isWeb3}
+            //account={appState.account}
+            account={web3.account}
+            ConnectWallet={ConnectWallet}
+            web3={web3.web3}
+          />} />
+          {/* web3={appState.web3} />} /> */}
+
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
 }
 
 export default App;
