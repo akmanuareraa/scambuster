@@ -12,6 +12,13 @@ const Pageres = require('pageres')
 const dotenv = require('dotenv');
 dotenv.config();
 
+const redis = require('redis');
+
+const client = redis.createClient();
+
+client.connect();
+
+
 const serverUrl = "https://lbn4bdcyigza.usemoralis.com:2053/server";
 const appId = "sj9S2QaFxz3JkackdDjSBnBR5KIjwpbVgeWV7fQe";
 
@@ -36,8 +43,8 @@ const config = {
     private: "7526f47bfe4f3316f4f7d94c1fa978b27741f8de0d1d09a39120bb2a54400e6a",
     rpc: "https://speedy-nodes-nyc.moralis.io/5a65aeefd6cc8930e6f47455/polygon/mumbai",
     ownerAddress: "0xcc1eB02Fa619dceb2dBd69BbAd7Dcd6C10063a37",
-    protonAddress: "0x07052F307c3DAC6fCd023676924213392f60a1C3",
-    valAddress: "0x202C4cb98cC87ca691F450F37E6B720602827dca"
+    protonAddress: "0x2e7d2fFeAA3eD4EC2FcB6068B735347766063Adb",
+    valAddress: "0xaC4228A108138acb86d829D6A4B09d0178200fDd"
 }
 
 const httpsServer = https.createServer({
@@ -83,11 +90,23 @@ async function sendInvite(data) {
         }
     });
 
+    let linkEnd = Math.floor((Math.random() * 10000000) + 1);
+    console.log("parameters", data.body, linkEnd)
+
+
+
+    client.on('error', (err) => console.log('Redis Client Error', err));
+
+    //await client.connect();   
+
+    await client.set(linkEnd, data.body);
+
+    console.log("written to redis");
     var mailOptions = {
         from: 'howdy@mecasso.io',
         to: data.to,
         subject: "Invitation to be a Scambuster validator",
-        text: "Hello,\nYou have been invited to be a validator on Scambuster \nPlease follow this link to verify: https://scambuster.io/verifylink/" + data.body
+        text: "Hello,\nYou have been invited to be a validator on Scambuster \nPlease follow this link to verify: https://scambuster.io/verifylink/" + linkEnd
     };
 
     return new Promise(function (resolve, reject) {
@@ -112,7 +131,7 @@ app.post('/mint', function (req, res) {
 
     console.log("Reached here", req.body)
     console.log("txns counts: ", web3.eth.getTransactionCount("0xcc1eB02Fa619dceb2dBd69BbAd7Dcd6C10063a37"))
-    contract.methods.mint(req.body.address, 1).send({ from: config.ownerAddress }, function (error, transactionHash) {
+    contract.methods.mint(req.body.address, Web3.utils.toWei("1")).send({ from: config.ownerAddress }, function (error, transactionHash) {
         if (error) {
             console.log("Error at mint charm");
         }
@@ -130,6 +149,33 @@ app.post('/mint', function (req, res) {
         });
 })
 
+
+app.post('/mintValidator', function (req, res) {
+
+    const owner = new HDWalletProvider(config.private, config.rpc)
+    const web3 = new Web3(owner)
+    const protonABI = JSON.parse(protonabi);
+    const contract = new web3.eth.Contract(protonABI, config.protonAddress)
+
+    console.log("Reached here", req.body)
+    console.log("txns counts: ", web3.eth.getTransactionCount("0xcc1eB02Fa619dceb2dBd69BbAd7Dcd6C10063a37"))
+    contract.methods.mint(req.body.address, Web3.utils.toWei("25")).send({ from: config.ownerAddress }, function (error, transactionHash) {
+        if (error) {
+            console.log("Error at mint");
+        }
+    })
+        .on('error', function (error) {
+            console.log("error at mint", error)
+            res.status(500).json({ Status: error })
+        })
+        .on('transactionHash', function (transactionHash) {
+            console.log("txHash", transactionHash);
+        })
+        .on('receipt', function (receipt) {
+            console.log("receipt", receipt);
+            res.status(200).json({ Status: receipt })
+        });
+})
 //app.post('/getpreview', function (req, res) {
 //    console.log("Reached here", req.body.url)
 //    linkpreview.getLinkPreview(req.body.url).then((data) =>
@@ -148,7 +194,7 @@ app.post('/getpreview', async function (req, res) {
         console.log('Finished generating screenshots!', image);
         res.status(200).json({ Status: image })
     } catch (error) {
-        res.status(200).json({ Status: "Error"})
+        res.status(200).json({ Status: "Error" })
     }
 })
 
@@ -180,21 +226,62 @@ app.post('/validatormint', function (req, res) {
 })
 
 app.get('/getSiteStatus', function (req, res) {
-    console.log("Reached here", req.query.url)
+    console.log("Reached here", req.query)
     // res.status(200).json({ Data:"TRUE", URL: req.query.url})
-    
+
     const owner = new HDWalletProvider(config.private, config.rpc)
     const web3 = new Web3(owner)
     const validatorABI = JSON.parse(validatorabi);
     const contract = new web3.eth.Contract(validatorABI, config.valAddress)
 
-    contract.methods.getVoteStatus(req.query.url).call({from: config.address}).then(function(response, error) {
-        if(response){
+    contract.methods.getVoteStatus(req.query.url).call({ from: config.address }).then(function (response, error) {
+        if (response) {
             console.log(response)
-            res.status(200).send({Data: response})
+            res.status(200).send({ Data: response })
+        } else {
+            console.log(error)
+        }
+    })
+})
+
+app.post('/getSiteStatus', function (req, res) {
+    console.log("Reached here", req.body.url)
+    // res.status(200).json({ Data:"TRUE", URL: req.query.url})
+
+    const owner = new HDWalletProvider(config.private, config.rpc)
+    const web3 = new Web3(owner)
+    const validatorABI = JSON.parse(validatorabi);
+    const contract = new web3.eth.Contract(validatorABI, config.valAddress)
+
+    contract.methods.getVoteStatus(req.body.url).call({ from: config.address }).then(function (response, error) {
+        if (response) {
+            console.log(response[1]);
+            res.status(200).send({ status: response[1] })
         } else {
             console.log(error)
         }
     })
 
 })
+
+app.post('/confirmlinkEnd', function (req, res) {
+
+    console.log(req.body, "body")
+
+    confirmlink(req.body.linkEnd).then(function (response, err) {
+
+        res.status(200).json({ address: response })
+
+    })
+
+})
+
+async function confirmlink(linkEnd) {
+
+    //await client.connect();   
+
+    const address = client.get(linkEnd);
+
+    return address;
+}
+

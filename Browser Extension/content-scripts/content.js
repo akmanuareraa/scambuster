@@ -47,26 +47,17 @@ function displayAlert() {
 }
 
 function getDataFromBackend() {
-    //console.log('CURRENT URL: ', window.location.href)
+    console.log('CURRENT URL: ', window.location.href)
     let url = new URL(window.location.href).hostname
     fetch('https://localhost:7171/getSiteStatus?&' + new URLSearchwarnTxtms({ url: url })).then(data => data.json())
         .then((json) => {
             console.log('Request succeeded with JSON response ', json["Data"]["1"])
             let spamCheckData = json["Data"]["1"]
             if (spamCheckData === 'TRUE') {
-                console.warn('SPAM SITE')
+                //console.warn('SPAM SITE')
                 displayAlert()
-
-                // Dynamically change Extension Icon 
-                // chrome.tabs.query({active:true, windowType:"normal", currentWindow: true},function(d){
-                //     var tabId = d[0].id;
-                //     chrome.browserAction.setsbIcon({path: browser.runtime.getURL("sbIcons/sb-48-r.png"), tabId: tabId});
-                // })
-                // chrome.browserAction.setsbIcon({path: browser.runtime.getURL("sbIcons/sb-48-r.png"));
-                // let alertinnerMsg = displayAlert()
-                // document.body.appendChild(alertinnerMsg);
             } else {
-                //console.log('NOT SPAM')
+                console.log('NOT SPAM')
             }
         }).catch(function (error) {
             console.log('request failed', error)
