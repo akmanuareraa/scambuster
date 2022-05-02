@@ -29,13 +29,16 @@ function HomeValidator_(props) {
 
   const [protonData, setprotonData] = useState({ balance: 0, circulation: 0 });
 
-  const validatorAddress = "0xaC4228A108138acb86d829D6A4B09d0178200fDd";
-  const protonAddress = "0x2e7d2fFeAA3eD4EC2FcB6068B735347766063Adb";
+  const validatorAddress = "0x1026628c3Ad736cc8FF09066724CF69e7a166F95";
+  const protonAddress = "0xf6BcDe6Bb9a6E6762669980091AD0853D3Ad9dB6";
 
   useEffect(() => {
     //new props.web3.eth.Contract(ABI,validatorAddress);
 
-    var contractProton = new props.appState.web3.eth.Contract(protonABI, protonAddress);
+    var contractProton = new props.appState.web3.eth.Contract(
+      protonABI,
+      protonAddress
+    );
     console.log("Reached here", contractProton, props.appState.account);
 
     contractProton.methods
@@ -65,11 +68,13 @@ function HomeValidator_(props) {
   }, []);
 
   useEffect(() => {
-
     console.log("sitedata", props.siteData.site)
     if (props.siteData.site) {
-      console.log('uecalled')
-      var contract = new props.appState.watchweb3.eth.Contract(ABI, validatorAddress);
+      console.log('calling con.')
+      var contract = new props.appState.watchweb3.eth.Contract(
+        ABI,
+        validatorAddress
+      );
 
       //props.watchweb3.eth.getBlockNumber(function(error,response){
       //if(response)
@@ -81,6 +86,7 @@ function HomeValidator_(props) {
           toBlock: "latest",
         })
         .then(function (events) {
+          console.log("events", events);
           for (
             let i = events.length - 1;
             i != -1 && i > events.length - 11;
@@ -92,7 +98,7 @@ function HomeValidator_(props) {
               .sitelist(events[t].returnValues._url)
               .call({ from: props.appState.account })
               .then(function (response, err) {
-                console.log("response", response);
+                console.log("response", response, "events", events);
                 events[t].returnValues.yesVotes =
                   response.yesVotes / Math.pow(10, 18);
                 events[t].returnValues.noVotes =
@@ -148,10 +154,10 @@ function HomeValidator_(props) {
   const sendInvite = () => {
     invites = invites - 1;
 
-    const server = "localhost:7171";
+    const server = "localhost:5000";
 
     let app = this;
-    var url = "https://" + server + "/sendinvite";
+    var url = "http://" + server + "/sendinvite";
 
     var params = JSON.stringify({
       to: inviteData.email,
@@ -337,7 +343,7 @@ function HomeValidator_(props) {
                             </div>
                             <b>Remarks</b>
                             <div className="column is-offset-2 has-text-left">
-                              {site.returnValues._comment.split('@_$_^',3).map((ele) => <p> • {ele}</p>)}
+                              {site.returnValues._comment}
                             </div>
                             <div className="column has-text-centered">
                               <a
@@ -390,7 +396,7 @@ function HomeValidator_(props) {
           <div className="column has-text-centered is-5 ">
             <div className="column">
               <nav className="panel is-light">
-                <p class="panel-heading is-centered">Proton Token Balance</p>
+                <p class="panel-heading is-centered">Proton Coin Balance</p>
                 <br></br>
                 <h1 className="title is-3">{protonData.balance} PTON</h1>
                 Total Circulation : {protonData.circulation} PTON

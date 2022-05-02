@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import abi from "../contract/validator.js";
 var ABI = JSON.parse(abi);
 
-const validatorAddress = "0xaC4228A108138acb86d829D6A4B09d0178200fDd";
+const validatorAddress = "0x1026628c3Ad736cc8FF09066724CF69e7a166F95";
 
 //import { useMoralis, useMoralisFile} from "react-moralis";
 
@@ -17,12 +17,6 @@ const validatorAddress = "0xaC4228A108138acb86d829D6A4B09d0178200fDd";
 //function HomeScam_() {
 
 const HomeScam = (props) => {
-  const [isActive, setActive] = useState(false);
-
-  const activateModal = () => {
-    setActive(!isActive);
-  };
-
   useEffect(() => {
     var contract = new props.appState.watchweb3.eth.Contract(
       ABI,
@@ -49,7 +43,7 @@ const HomeScam = (props) => {
 
           contract.methods
             .sitelist(events[t].returnValues._url)
-            .call({ from: props.account })
+            .call({ from: props.appState.account })
             .then(function (response, err) {
               console.log("response in HomeScam", response);
               events[t].returnValues.yesVotes =
@@ -75,51 +69,6 @@ const HomeScam = (props) => {
 
   return (
     <div className="bg-img">
-      <div className={isActive ? "modal is-active" : "modal"}>
-        <div class="modal-background"></div>
-        <div class="modal-content">
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title has-text-centered">
-                <b>Connect Your Wallet</b>
-              </p>
-            </header>
-            <section
-              class="modal-card-body"
-              style={{
-                borderBottomLeftRadius: "5px",
-                borderBottomRightRadius: "5px",
-              }}
-            >
-              <div className="columns is-centered">
-                <img
-                  src="/images/metamask.svg"
-                  style={({ height: "300px" }, { width: "300px" })}
-                ></img>
-              </div>
-              <div className="columns is-centered">
-                <a href="https://metamask.io/download/" target="_blank">
-                  <button
-                    class="button is-success mb-3"
-                    style={{ backgroundColor: "#F6851B" }}
-                  >
-                    Install Metamask
-                  </button>
-                </a>
-              </div>
-            </section>
-            {/* <footer class="modal-card-foot">
-              <button class="button is-success">Save changes</button>
-              <button class="button">Cancel</button>
-            </footer> */}
-          </div>
-        </div>
-        <button
-          class="modal-close is-large"
-          aria-label="close"
-          onClick={() => activateModal()}
-        ></button>
-      </div>
       <div className="box bg-img">
         <div className="columns is-centered">
           <div className="column has-text-centered">
@@ -166,13 +115,7 @@ const HomeScam = (props) => {
                   <div className="column ">
                     <a
                       className="button is-large is-black "
-                      onClick={() => {
-                        if(props.appState.account){
-                          navigate("/proposer")
-                        } else {
-                          activateModal()
-                        }
-                      }}
+                      onClick={() => navigate("/proposer")}
                     >
                       Report a Scam{" "}
                     </a>
@@ -180,13 +123,7 @@ const HomeScam = (props) => {
                   <div className="column">
                     <a
                       className="button is-large is-link "
-                      onClick={() => {
-                        if(props.appState.account){
-                          navigate("/validator")
-                        } else {
-                          activateModal()
-                        }
-                      }}
+                      onClick={() => navigate("/validator")}
                     >
                       {" "}
                       Validator Login
@@ -245,8 +182,11 @@ const HomeScam = (props) => {
                       );
                     })}
                   </div>
+                  
                 </div>
+                <button class="button is-link is-large mt-4">Check for a Site</button>
               </div>
+              
             </div>
           </div>
         </div>

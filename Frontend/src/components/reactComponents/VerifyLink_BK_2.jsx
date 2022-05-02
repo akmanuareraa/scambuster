@@ -18,7 +18,6 @@ const navigate = useNavigate();
     props.urlParser();
 }, [])
 
-
 useEffect(() => {
   if(!props.isWeb3)
   props.ConnectWallet();
@@ -26,7 +25,7 @@ useEffect(() => {
 })
 
 const [validator, setValidator] = useState({ status : false});
-const protonAddress = '0x2e7d2fFeAA3eD4EC2FcB6068B735347766063Adb';
+const protonAddress = '0x222A1417108fde10eD49d447E782FbD30F8ADF37';
 
   
 const checkValidator = () => {
@@ -56,74 +55,14 @@ contractProton.methods
           createValidator();
         }
       })
-    }
-  
-    useEffect(() => {
-      
-      if(props.allUrlParams.linkEnd)
-      {
-      const server = "localhost:5000"
-  
-    let app = this;
-    var url = 'https://'+ server+'/confirmlinkEnd';
-       
-      console.log(props.allUrlParams.linkEnd,"linkEnd");
-            
-      var params = JSON.stringify({
-        linkEnd: props.allUrlParams.linkEnd
-      });
-  
-    console.log("url",url);  
-  
-    console.log(params,"params");	
-  
-      fetch(url, {
-  
-      method: 'POST',
-    mode: 'cors',
-    
-      headers: {
-      'Accept': 'application/json',
-      'Content-Type':'application/json',
-          },	
-      body: params
-          
-        }).then(function(response,error) {
+    } 
 
-            if(response)
-          {
-            return response.json();
-          }
-        else 
-          {
-            console.log(error);
-          }
-          }).then(function(data){
-            
-            console.log("linked address",data.address);
-
-            
-            props.setallUrlParams(prevState => {
-              return {
-                  ...prevState,
-                  address: data.address
-              }
-              });
-            
-      
-          })
-        }
-      },[props.allUrlParams.linkEnd])
-    
-
-    
-    
 const createValidator = () => {
   
-    const server = "localhost:7171"
+    const server = "localhost:5000"
   
     let app = this;
-    var url = 'https://'+ server+'/mintValidator';
+    var url = 'http://'+ server+'/mintValidator';
        
   
             

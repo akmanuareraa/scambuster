@@ -14,6 +14,7 @@ import Nav from './components/reactComponents/Navbar'
 import HomeValidator from './components/reactComponents/Validator'
 import HomeProposer from './components/reactComponents/Proposer'
 import VerifyLink from './components/reactComponents/VerifyLink'
+import HomeSearcher from './components/reactComponents/Searcher'
 
 //Using bulma alternative here to save effort. Plasmic version CreateNftForm is also there in repo
 // import CreateNftForm  from './components/reactComponents/CreateNftbulma'
@@ -39,7 +40,7 @@ function App() {
   const [appState, setAppState] = useState({
     watchweb3: new Web3(new Web3.providers.WebsocketProvider('wss://speedy-nodes-nyc.moralis.io/833cf87df6d280847ac4787c/polygon/mumbai/ws'))
   })
-  const [allUrlParams, setallUrlParams] = useState({ address: "" })
+  const [allUrlParams, setallUrlParams] = useState({ })
   const [siteData, setsiteData] = useState({ site: [] })
 
   const [web3, setweb3] = useState({
@@ -69,7 +70,7 @@ function App() {
 
     const paramsArray = href.split("/");
 
-    const address = paramsArray[paramsArray.length - 1]
+    const linkEnd = paramsArray[paramsArray.length - 1]
 
     //const queryParams = new URLSearchParams(window.location.search);
     //console.log("queryParams",queryParams);
@@ -82,7 +83,7 @@ function App() {
     setallUrlParams(prevState => {
       return {
         ...prevState,
-        address: address
+        linkEnd: linkEnd
       }
     })
   }
@@ -147,8 +148,8 @@ function App() {
           <Route path="/validator" element={<HomeValidator
             appState={appState}
             setAppState={setAppState}
-            // web3={web3.web3}
-            // account={web3.account}
+            web3={web3.web3}
+            account={web3.account}
             siteData={siteData}
             setsiteData={setsiteData}
           />} />
@@ -158,12 +159,15 @@ function App() {
           />} />
           <Route exact path="/verifylink/:address" element={<VerifyLink
             allUrlParams={allUrlParams}
+			setallUrlParams={setallUrlParams}
             urlParser={urlParser}
             isWeb3={web3.isWeb3}
             //account={appState.account}
             account={web3.account}
             ConnectWallet={ConnectWallet}
             web3={web3.web3}
+          />} />
+          <Route exact path="/searcher" element={<HomeSearcher
           />} />
           {/* web3={appState.web3} />} /> */}
 

@@ -57,33 +57,34 @@ function HomeProposer_(props) {
   }, [error]);
 
   const ERC20Transfers = () => {
-    let pastDate = new Date().setMonth(new Date().getMonth() - 24);
-    console.log("Func called with ", pastDate);
-    fetchERC20Transfers({
-      params: {
-        chain: "0x13881",
-        address: "0x46880A842561Fe468eC07705c68DD0E7ef201a61",
-        from_block: 0,
-        // to_date: "20200401",
-      },
-    }).then(function (response, error) {
-      if (response) {
-        console.log("Transactions ", response);
-        console.log("Txns Data", data);
-        let totalTxns = response.total;
-        let oldTxnObj = response.result[totalTxns - 1];
-        let oldTimestamp = new Date(oldTxnObj.block_timestamp).valueOf();
-        console.log("dates", oldTimestamp, pastDate);
-        if (oldTimestamp < pastDate) {
-          console.log("Eligible for Airdrop");
-          // mintToken()
-        } else {
-          alert("Not Eligible for Airdrop");
-        }
-      } else {
-        console.log(error);
-      }
-    });
+    mintToken()
+    // let pastDate = new Date().setMonth(new Date().getMonth() - 24);
+    // console.log("Func called with ", pastDate);
+    // fetchERC20Transfers({
+    //   params: {
+    //     chain: "0x13881",
+    //     address: props.appState.account,
+    //     from_block: 0,
+    //     // to_date: "20200401",
+    //   },
+    // }).then(function (response, error) {
+    //   if (response) {
+    //     console.log("Transactions ", response);
+    //     console.log("Txns Data", data);
+    //     let totalTxns = response.total;
+    //     let oldTxnObj = response.result[totalTxns - 1];
+    //     let oldTimestamp = new Date(oldTxnObj.block_timestamp).valueOf();
+    //     console.log("dates", oldTimestamp, pastDate);
+    //     if (oldTimestamp < pastDate) {
+    //       console.log("Eligible for Airdrop");
+    //       // mintToken()
+    //     } else {
+    //       alert("Not Eligible for Airdrop");
+    //     }
+    //   } else {
+    //     console.log(error);
+    //   }
+    // });
   };
 
   const [websiteData, setwebsiteData] = useState({
@@ -117,7 +118,7 @@ function HomeProposer_(props) {
     var ABI = JSON.parse(protonabi);
     var contract = new props.appState.web3.eth.Contract(
       ABI,
-      "0xf6BcDe6Bb9a6E6762669980091AD0853D3Ad9dB6"
+      "0x2e7d2fFeAA3eD4EC2FcB6068B735347766063Adb"
     );
     contract.methods
       .balanceOf(props.appState.account)
@@ -125,13 +126,13 @@ function HomeProposer_(props) {
       .then(function (response, error) {
         if (response) {
           console.log("balance of " + response);
-          if(response >= 1){
+          if (response >= 1) {
             setwebsiteData((prevState) => {
               return {
                 ...prevState,
                 //protonBalance: Web3.utils.fromWei(response.toString()),
                 protonBalance: response,
-                overBalance: true
+                overBalance: true,
               };
             });
           }
@@ -199,16 +200,6 @@ function HomeProposer_(props) {
   };
 
   const getLinkPreview = async () => {
-    // let base64img = await captureWebsite.base64(url)
-    // setwebsiteData((prevState) => {
-    //     return {
-    //         ...prevState,
-    //         linkpreview: {
-    //             ...prevState.linkpreview,
-    //             img: base64img
-    //         }
-    //     }
-    // })
     axios
       .post("https://localhost:7171/getpreview", { url: websiteData.website })
       .then(function (response, error) {
@@ -264,6 +255,16 @@ function HomeProposer_(props) {
     });
   };
 
+  // const ipfsCom = async () => {
+  //   let txt = "IPFS CHECK - 1"
+  //   console.log("txt", txt);
+  //   let ipfsUrl;
+  //   const client = create("https://ipfswrite.mecasso.live/api/v0/add");
+  //   const added = await client.add(txt)
+  //   ipfsUrl = "https://ipfs.mecasso.live/ipfs/" + added.path;
+  //   console.log("ipfsUrl", ipfsUrl);
+  // }
+
   const confirmSubmission = async () => {
     console.log("websiteData", websiteData);
     let ipfsUrl;
@@ -275,7 +276,7 @@ function HomeProposer_(props) {
     var ABI = JSON.parse(validatorabi);
     var contract = new props.appState.web3.eth.Contract(
       ABI,
-      "0x1026628c3Ad736cc8FF09066724CF69e7a166F95"
+      "0xaC4228A108138acb86d829D6A4B09d0178200fDd"
     );
     // var ipfsURL =
     //   "https://ipfs.mecasso.live/ipfs/" + encodeURIComponent(app.state.ipfsID);
@@ -289,7 +290,7 @@ function HomeProposer_(props) {
           "@_$_^" +
           websiteData.comment3 +
           "@_$_^",
-          ipfsUrl
+        ipfsUrl
       )
       .send({ from: props.appState.account })
       .then(function (response, error) {
@@ -371,32 +372,14 @@ function HomeProposer_(props) {
       });
   };
 
-  //   const checkContract = () => {
-  //     var ABI = JSON.parse(validatorabi);
-  //     var contract = new props.appState.web3.eth.Contract(
-  //       ABI,
-  //       "0x37e9A220Dd1833C36a9063901662E0dDbA031f6F"
-  //     );
-  //     contract.methods
-  //       .sitelist("fakecrypto.com")
-  //       .call({ from: props.appState.account })
-  //       .then(function (response, error) {
-  //         if (response) {
-  //           console.log("response from validator contract", response);
-  //         } else {
-  //           console.log("error", error);
-  //         }
-  //       });
-  //   };
-
   return (
     <div>
       {/* <button
         onClick={() => {
-          ERC20Transfers();
+          ipfsCom();
         }}
       >
-        Check Contract
+        Check IPFS
       </button> */}
       <div className="columns">
         <div className="column"></div>
@@ -424,6 +407,7 @@ function HomeProposer_(props) {
                       <div>
                         <p className="title is-2">Successfully Submitted</p>
                         <img src="/images/success.gif"></img>
+                        <button className="button is-dark">Return to Home</button>
                       </div>
                     ) : (
                       <div>
@@ -537,9 +521,7 @@ function HomeProposer_(props) {
                         ) : (
                           <div>
                             <p class="panel-heading is-centered">
-                              <p className="title is-2">
-                                <b>Report a Scam Website</b>
-                              </p>
+                              <p className="">Report a Scam Website</p>
                             </p>
 
                             <div class="panel-block ">
@@ -547,9 +529,7 @@ function HomeProposer_(props) {
                               <br></br>
                               <div className="column is-8 is-offset-2 has-text-centered">
                                 <label className="label is-family-secondary">
-                                  <p className="title is-4">
-                                    Website Home Page Link
-                                  </p>
+                                  <p className="">Website Home Page Link</p>
                                 </label>
                                 <div className="control">
                                   <div className="columns mt-1">
@@ -572,7 +552,7 @@ function HomeProposer_(props) {
                                 <br></br>
 
                                 <label className="label is-family-secondary mt-3 mb-3">
-                                  <p className="title is-4">
+                                  <p className="">
                                     Why do you think this is a scam?
                                   </p>
                                 </label>
@@ -608,7 +588,7 @@ function HomeProposer_(props) {
                                 <br></br>
 
                                 <label className="label is-family-secondary">
-                                  <p className="title is-4 mt-3">
+                                  <p className="">
                                     Upload Screenshots (.jpg/.gif)
                                   </p>
                                 </label>
@@ -640,12 +620,14 @@ function HomeProposer_(props) {
                                 <a
                                   className="button is-success mt-2"
                                   onClick={() => {
-                                    if(websiteData.protonBalance < 1){
-                                      alert("Proton Coin Balance Too Low. Please mint some Coins")
-                                    }else{
+                                    if (websiteData.protonBalance < 1) {
+                                      alert(
+                                        "Proton Coin Balance Too Low. Please mint some coins"
+                                      );
+                                    } else {
                                       submitEvaluation();
                                     }
-                                    
+
                                     // console.log("Submitted");
                                   }}
                                 >
@@ -667,14 +649,14 @@ function HomeProposer_(props) {
             <div className="column grey-box">
               <nav className="panel is-light">
                 <p class="panel-heading is-centered">
-                  <p className="title is-2">
+                  <p className="">
                     <b>Proton Coin Balance</b>
                   </p>
                 </p>
                 <br></br>
-                <h1 className="title is-3">{websiteData.protonBalance} PTON</h1>
-                <p className="title is-6 mb-1">
-                  Total Circulation : {websiteData.protonSupply} PTON
+                <h1 className="title is-3">{Web3.utils.fromWei(websiteData.protonBalance.toString())} PTON</h1>
+                <p className="">
+                  Total Circulation : {Web3.utils.fromWei(websiteData.protonSupply.toString())} PTON
                 </p>
                 <br></br>
                 <br></br>

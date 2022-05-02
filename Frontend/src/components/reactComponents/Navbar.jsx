@@ -5,6 +5,12 @@ import "../../App.css";
 
 function Nav(props) {
   const navigate = useNavigate();
+  const [isActive, setActive] = useState(false);
+
+  const activateModal = () => {
+    setActive(!isActive);
+  };
+
   const connectWallet = () => {
     console.log("Reached wallet", window.ethereum);
     if (window.ethereum) {
@@ -50,8 +56,54 @@ function Nav(props) {
 
   return (
     <div>
+      <div className={isActive ? "modal is-active" : "modal"}>
+        <div class="modal-background"></div>
+        <div class="modal-content">
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title has-text-centered">
+                <b>Connect Your Wallet</b>
+              </p>
+            </header>
+            <section class="modal-card-body" style={{borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px"}}>
+              <div className="columns is-centered">
+                <img
+                  src="/images/metamask.svg"
+                  style={({ height: "300px" }, { width: "300px" })}
+                ></img>
+              </div>
+              <div className="columns is-centered">
+                <a href="https://metamask.io/download/" target="_blank">
+                  <button
+                    class="button is-success mb-3"
+                    style={{ backgroundColor: "#F6851B" }}
+                  >
+                    Install Metamask
+                  </button>
+                </a>
+              </div>
+            </section>
+            {/* <footer class="modal-card-foot">
+              <button class="button is-success">Save changes</button>
+              <button class="button">Cancel</button>
+            </footer> */}
+          </div>
+        </div>
+        <button
+          class="modal-close is-large"
+          aria-label="close"
+          onClick={() => activateModal()}
+        ></button>
+      </div>
       <nav className="navbar is-black py-3" aria-label="main navigation">
         <div className="navbar-brand">
+          <a href="http://google.com">
+            <img
+              src={"/sb_icon.png"}
+              className="ml-4"
+              style={{ height: "75px", width: "75px" }}
+            ></img>
+          </a>
           <div className="navbar-item ">
             <h1 className="title is-3 ml-5" style={{ color: "white" }}>
               Scambuster
@@ -66,11 +118,13 @@ function Nav(props) {
               className="navbar-item ml-5"
               style={{ color: "white", fontSize: "20px", background: "none" }}
               onClick={() => {
-                if (props.appState.account) {
-                  navigate("/");
-                } else {
-                  alert("Please Connect You Wallet");
-                }
+                navigate("/")
+                // if (props.appState.account) {
+                //   navigate("/");
+                // } else {
+                //   //activateModal()
+                //   alert("Please Connect You Wallet 1");
+                // }
               }}
             >
               Home
@@ -83,7 +137,8 @@ function Nav(props) {
                 if (props.appState.account) {
                   navigate("/proposer");
                 } else {
-                  alert("Please Connect You Wallet");
+                  activateModal();
+                  //alert("Please Connect You Wallet 2");
                 }
               }}
             >
@@ -97,7 +152,8 @@ function Nav(props) {
                 if (props.appState.account) {
                   navigate("/validator");
                 } else {
-                  alert("Please Connect You Wallet");
+                  activateModal();
+                  // alert("Please Connect You Wallet 3");
                 }
               }}
             >
@@ -108,11 +164,13 @@ function Nav(props) {
               className="navbar-item"
               style={{ color: "white", fontSize: "20px", background: "none" }}
               onClick={() => {
-                if (props.appState.account) {
-                  navigate("/validator");
-                } else {
-                  alert("Please Connect You Wallet");
-                }
+                navigate("/searcher");
+                // if (props.appState.account) {
+                //   navigate("/searcher");
+                // } else {
+                //   activateModal();
+                //   // alert("Please Connect You Wallet");
+                // }
               }}
             >
               Search
