@@ -390,7 +390,7 @@ function HomeValidator_(props) {
           <div className="column has-text-centered is-5 ">
             <div className="column">
               <nav className="panel is-light">
-                <p class="panel-heading is-centered">Proton Token Balance</p>
+                <p class="panel-heading is-centered">Proton Points Balance</p>
                 <br></br>
                 <h1 className="title is-3">{protonData.balance} PTON</h1>
                 Total Circulation : {protonData.circulation} PTON

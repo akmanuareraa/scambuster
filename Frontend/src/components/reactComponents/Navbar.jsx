@@ -106,7 +106,7 @@ function Nav(props) {
           </a>
           <div className="navbar-item ">
             <h1 className="title is-3 ml-5" style={{ color: "white" }}>
-              Scambuster
+              <a href="http://#" style={{ textDecoration: "none", color: "white" }}>Scambuster</a>
             </h1>
           </div>
         </div>
@@ -115,10 +115,10 @@ function Nav(props) {
           <div className="navbar-start"></div>
           <div className="navbar-menu mt-2">
             <a
-              className="navbar-item ml-5"
+              className="navbar-item ml-6"
               style={{ color: "white", fontSize: "20px", background: "none" }}
               onClick={() => {
-                navigate("/")
+                navigate("/aboutus")
                 // if (props.appState.account) {
                 //   navigate("/");
                 // } else {
@@ -127,7 +127,7 @@ function Nav(props) {
                 // }
               }}
             >
-              Home
+              About Us
             </a>
 
             <a

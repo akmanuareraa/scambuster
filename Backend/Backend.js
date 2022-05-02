@@ -226,26 +226,42 @@ app.post('/validatormint', function (req, res) {
 })
 
 app.get('/getSiteStatus', function (req, res) {
-    console.log("Reached here", req.query)
+    console.log("Reached here get", req.query)
     // res.status(200).json({ Data:"TRUE", URL: req.query.url})
 
     const owner = new HDWalletProvider(config.private, config.rpc)
     const web3 = new Web3(owner)
     const validatorABI = JSON.parse(validatorabi);
+    web3.eth.handleRevert = true;
     const contract = new web3.eth.Contract(validatorABI, config.valAddress)
 
-    contract.methods.getVoteStatus(req.query.url).call({ from: config.address }).then(function (response, error) {
-        if (response) {
-            console.log(response)
-            res.status(200).send({ Data: response })
-        } else {
-            console.log(error)
-        }
-    })
+    try {
+        contract.methods.getVoteStatus(req.query.url).call({ from: config.address }).then(function (response, err) {
+            if (response) {
+                console.log(response[1]);
+                res.status(200).send({ status: response[1] })
+            } else {
+                console.log(error)
+            }
+        })
+        // .on('error', function (error) {
+        //     console.log("error at mintcharm", error)
+        //     res.status(500).json({ Status: error })
+        // })
+        // .on('transactionHash', function (transactionHash) {
+        //     console.log("txHash", transactionHash);
+        // })
+        // .on('receipt', function (receipt) {
+        //     console.log("receipt", receipt);
+        //     res.status(200).json({ Status: receipt })
+
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 app.post('/getSiteStatus', function (req, res) {
-    console.log("Reached here", req.body.url)
+    console.log("Reached here post", req.body.url)
     // res.status(200).json({ Data:"TRUE", URL: req.query.url})
 
     const owner = new HDWalletProvider(config.private, config.rpc)
@@ -261,6 +277,25 @@ app.post('/getSiteStatus', function (req, res) {
             console.log(error)
         }
     })
+
+    // try {
+    //     console.log('inside try')
+    //     contract.methods.getVoteStatus(req.body.url).call({ from: config.address })
+    //         .on('transactionHash', function (txnhash) {
+    //             console.log(txnhash)
+    //         })
+    //         .on('receipt', function (receipt) {
+    //             console.log(receipt)
+    //         })
+    //         .on('confirmation', function (confirmationNumber, receipt) {
+    //             console.log(confirmationNumber)
+    //         })
+    //         .on('error', function (err) {
+    //             console.log(error)
+    //         })
+    // } catch (error) {
+    //     console.log('catch error', error)
+    // }
 
 })
 

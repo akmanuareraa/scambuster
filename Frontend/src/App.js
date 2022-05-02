@@ -15,6 +15,7 @@ import HomeValidator from './components/reactComponents/Validator'
 import HomeProposer from './components/reactComponents/Proposer'
 import VerifyLink from './components/reactComponents/VerifyLink'
 import HomeSearcher from './components/reactComponents/Searcher'
+import Aboutus from './components/reactComponents/AboutUs'
 
 //Using bulma alternative here to save effort. Plasmic version CreateNftForm is also there in repo
 // import CreateNftForm  from './components/reactComponents/CreateNftbulma'
@@ -168,6 +169,8 @@ function App() {
             web3={web3.web3}
           />} />
           <Route exact path="/searcher" element={<HomeSearcher
+          />} />
+          <Route exact path="/aboutus" element={<Aboutus
           />} />
           {/* web3={appState.web3} />} /> */}
 

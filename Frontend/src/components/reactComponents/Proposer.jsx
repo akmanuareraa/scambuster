@@ -622,7 +622,7 @@ function HomeProposer_(props) {
                                   onClick={() => {
                                     if (websiteData.protonBalance < 1) {
                                       alert(
-                                        "Proton Coin Balance Too Low. Please mint some coins"
+                                        "Proton Points Balance Too Low. Please mint points"
                                       );
                                     } else {
                                       submitEvaluation();
@@ -650,7 +650,7 @@ function HomeProposer_(props) {
               <nav className="panel is-light">
                 <p class="panel-heading is-centered">
                   <p className="">
-                    <b>Proton Coin Balance</b>
+                    <b>Proton Points Balance</b>
                   </p>
                 </p>
                 <br></br>
